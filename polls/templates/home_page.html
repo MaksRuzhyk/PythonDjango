@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+</head>
+<body>
+<h1>Home Page</h1>
+{% block header %}
+<a href="{% url 'index' %}">Index</a>
+{% endblock %}
+
+{% block content %}
+{% for post in posts %}
+    <p>
+        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+    </p>
+{% endfor %}
+{% for author in author %}
+    <p>
+        <a href="{% url 'author_page' author.pk %}">{{ author.first_name }} {{ author.last_name }}</a>
+    </p>
+{% endfor %}
+{% endblock %}
+</body>
+</html>
