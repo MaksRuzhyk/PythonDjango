@@ -2,8 +2,8 @@ from datetime import datetime
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Post, Author
-from .forms import PostForm
+from .models import Post, Author, Coment
+from .forms import PostForm, CommentForm
 from django.urls import reverse, reverse_lazy
 def index(request):
     context = {'massage':'hello'}
@@ -32,9 +32,24 @@ def add_post(request):
 
 def post_detail(request,pk):
     post = Post.objects.get(pk=pk)
-    context = {'post':post}
-    return render(request,'post_detail.html',context)
+    post_comments = Coment.objects.filter(post=post)
+    sorted_comments = post_comments.order_by('-update_date')[:10]
 
+    form = CommentForm()
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            saved = form.save(commit=False)
+            saved.create_date = datetime.now()
+            saved.update_date = datetime.now()
+            saved.post = post
+            saved.author = request.user
+            saved.save()
+            form = CommentForm()
+            return HttpResponseRedirect(reverse('post_detail', kwargs={'pk': pk}))
+    context = {'post': post, 'post_comments': sorted_comments, 'form': form}
+    return render(request,'post_detail.html',context)
 
 def author_page(request, pk):
     author = Author.objects.get(pk=pk)
@@ -46,5 +61,5 @@ def add_like(request,pk):
     post = Post.objects.get(pk=pk)
     post.numbers_of_likes +=1
     post.save()
-    return render(request, 'post_detail.html', {'post': post})
+    return HttpResponseRedirect(reverse('post_detail', kwargs={'pk': pk}))
 
