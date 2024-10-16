@@ -7,21 +7,23 @@
 </head>
 <body>
 <h1>Home Page</h1>
-{% block header %}
-<a href="{% url 'index' %}">Index</a>
-{% endblock %}
 
 {% block content %}
-{% for post in posts %}
-    <p>
-        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
-    </p>
-{% endfor %}
+<h1>Posts</h1>
+<ul class="list-group">
+   {% for post in posts %}
+        <li class="list-group-item"><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></li>
+     {% endfor %}
+</ul>
+
+<h1>Authors</h1>
+<ul class="list-group">
 {% for author in author %}
-    <p>
-        <a href="{% url 'author_page' author.pk %}">{{ author.first_name }} {{ author.last_name }}</a>
-    </p>
+
+    <li class="list-group-item"><a href="{% url 'author_page' author.pk %}">{{ author.first_name }} {{ author.last_name }}</a></li>
+
 {% endfor %}
+</ul>
 {% endblock %}
 </body>
 </html>

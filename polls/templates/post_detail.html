@@ -7,39 +7,80 @@
 </head>
 <body>
 {% block content %}
+<div class="container text-center">
+  <div class="row">
+    <div class="col">
+      <div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{ post.title}} </h5>
+    <h6 class="card-subtitle mb-2 text-body-secondary">{{ post.update_date }}</h6>
+    <p class="card-text">{{ post.content }}</p>
+    <a style="color:red; text-decoration:none;" href="{% url 'add_like' post.pk %}">{{ post.number_of_likes }}&hearts;</a>
+    <a href="#" class="card-link">Another link</a>
+  </div>
+</div>
+    </div>
+    <div class="col">
+      <div id="carouselExample" class="carousel slide" style=" width: 100%;" >
+  <div class="carousel-inner" style=" width: 100%;">
+    <div class="carousel-item active" style=" width: 100%;">
+        <div class="row">
+  <div class="col-sm-6 mb-3 mb-sm-0">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Comments</h5>
 
-<p>
-    <b>Title:</b>{{ post.title }}
 
-</p>
-<p>
-    <b>Content:</b>{{ post.content }}
+      </div>
+    </div>
+  </div>
 
-</p>
-<p>
-    <b>Likes:</b>{{ post.numbers_of_likes }}  <button><a href="{% url 'add_like' post.pk %}">Like</a></button>
+</div>
+    </div>
+    {% for comment in post_comments %}
+    <div class="carousel-item" style=" width: 100%;">
+        <div class="row">
+  <div class="col-sm-6 mb-3 mb-sm-0">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title" >{{ comment.author }}</h5>
+        <p class="card-text">{{ comment.text }}</p>
+        <a href="{% url 'author_page' comment.author.pk %}" class="btn btn-primary">Go to authors page</a>
+      </div>
+    </div>
+  </div>
 
-</p>
-<p>
-    <b>Created Date:</b>{{ post.create_data }}
-
-</p>
-<p>
-    <b>Updated Date:</b>{{ post.update_data }}
-
-</p>
-<!--<button><a href="{}"></a>-->
-<h1>Comments</h1>
-{% for comment in post_comments %}
-    <p>
-        {{ comment.text }} {{ comment.author }} {{ comment.update_date }}
-    </p>
-{% endfor %}
-<form method="post">
+</div>
+    </div>
+      {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+    </div>
+    <div class="col">
+     <form method="post">
     {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="Add Comment">
+
+  <div class="mb-3">
+    <label for="{{ form.content.id_for_label }}" class="form-label">Text</label>
+    <input name="text" type="text" class="form-control" id="exampleInputPassword1">
+  </div>
+    <button type="submit" class="btn btn-primary" >Leave comment</button>
 </form>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 {% endblock %}
 </body>

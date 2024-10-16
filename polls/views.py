@@ -1,10 +1,16 @@
 from datetime import datetime
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.db.models import F
+from django.http import HttpResponse,HttpResponseRedirect
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from .models import Post, Author, Coment
-from .forms import PostForm, CommentForm
 from django.urls import reverse, reverse_lazy
+
+from .models import Post, Author, Coment
+
+from .forms import PostForm,CommentForm
 def index(request):
     context = {'massage':'hello'}
     return render(request, 'index.html',context)
@@ -12,9 +18,10 @@ def index(request):
 def home_page(request):
     posts = Post.objects.all()
     authors = Author.objects.all()
-    context = {'posts':posts, 'author':authors}
+    context = {'posts': posts, 'author':authors}
     return render(request, 'home_page.html',context)
 
+@login_required()
 def add_post(request):
 
     form = PostForm(request.POST)
@@ -23,11 +30,12 @@ def add_post(request):
             saved = form.save(commit=False)
             saved.create_data = datetime.now()
             saved.update_data = datetime.now()
-
+            saved.author = request.user
+            print(saved)
             saved.save()
             return HttpResponseRedirect(reverse_lazy('add_post'))
 
-    return render(request, 'add_post.html', {'form':form})
+    return render(request, 'add_post.html', {'form': form})
 
 
 def post_detail(request,pk):
@@ -63,3 +71,12 @@ def add_like(request,pk):
     post.save()
     return HttpResponseRedirect(reverse('post_detail', kwargs={'pk': pk}))
 
+def post_edit(request,pk):
+    post = Post.objects.get(pk=pk)
+    form = PostForm(request.POST)
+
+class UserLogin(LoginView):
+    template_name = 'login.html'
+
+class UserLogout(LoginRequiredMixin,LogoutView):
+    template_name = 'logout.html'
